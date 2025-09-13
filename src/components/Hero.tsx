@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sprout, TrendingUp, Users, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 import agriverselogo from "@/assets/agriverse-logo.png";
 
 const Hero = () => {
@@ -58,15 +59,17 @@ const Hero = () => {
           <Button 
             size="lg" 
             className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-4 text-lg font-semibold shadow-harvest hover-grow"
+            asChild
           >
-            Get Started Today
+            <Link to="/profile">Get Started Today</Link>
           </Button>
           <Button 
             variant="outline" 
             size="lg"
             className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 px-8 py-4 text-lg"
+            asChild
           >
-            Learn More
+            <Link to="/about">Learn More</Link>
           </Button>
         </div>
         
