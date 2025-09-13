@@ -61,7 +61,7 @@ const Hero = () => {
             className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-4 text-lg font-semibold shadow-harvest hover-grow"
             asChild
           >
-            <Link to="/profile">Get Started Today</Link>
+            <Link to="/home">Get Started Today</Link>
           </Button>
           <Button 
             variant="outline" 
