@@ -52,14 +52,14 @@ const Contact = () => {
     {
       icon: Phone,
       title: "Call Us",
-      details: "+1 (555) 123-FARM",
-      description: "Mon-Fri, 8AM-6PM",
+      details: "+91- 9990005555 ",
+      description: "Mon-Fri, 8AM-8PM",
       color: "text-success"
     },
     {
       icon: MapPin,
       title: "Visit Us",
-      details: "123 Agriculture Street, Farm City, FC 12345",
+      details: "Noida",
       description: "Our headquarters",
       color: "text-accent"
     },

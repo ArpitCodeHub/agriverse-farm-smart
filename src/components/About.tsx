@@ -143,7 +143,7 @@ const About = () => {
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { number: "10,000+", label: "Active Farmers" },
+              { number: "100+", label: "Active Farmers" },
               { number: "50+", label: "Crop Types Supported" },
               { number: "95%", label: "Yield Improvement" },
               { number: "24/7", label: "Expert Support" }
@@ -161,7 +161,7 @@ const About = () => {
         </div>
 
         {/* Technology Stack */}
-        <div className="mt-16 text-center">
+        {/* <div className="mt-16 text-center">
           <h3 className="text-2xl font-bold mb-8 text-foreground">
             Powered by Advanced Technology
           </h3>
@@ -186,7 +186,7 @@ const About = () => {
               </Badge>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );
