@@ -3,12 +3,12 @@ import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   // Add your Firebase config here
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
+  apiKey: "AIzaSyDnW6Jlsvy4fNdfvwQ0LPjlYSCLTgQIQ4o",
+  authDomain: "agriverse-5af0d.firebaseapp.com",
+  projectId: "agriverse-5af0d",
+  storageBucket: "agriverse-5af0d.firebasestorage.app",
+  messagingSenderId: "695900915133",
+  appId: "1:695900915133:web:c212a259c49ed0ec93fed4"
 };
 
 const app = initializeApp(firebaseConfig);
