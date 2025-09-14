@@ -57,13 +57,6 @@ const Hero = () => {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
           <Button 
-            size="lg" 
-            className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-4 text-lg font-semibold shadow-harvest hover-grow"
-            asChild
-          >
-            <Link to="/home">Get Started Today</Link>
-          </Button>
-          <Button 
             variant="outline" 
             size="lg"
             className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 px-8 py-4 text-lg"

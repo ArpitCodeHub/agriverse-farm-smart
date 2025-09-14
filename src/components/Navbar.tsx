@@ -1,11 +1,19 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
   return (
     <nav className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50">
@@ -21,10 +29,10 @@ const Navbar = () => {
         
         <div className="flex items-center space-x-6">
           <Link 
-            to="/" 
+            to="/home" 
             className={cn(
               "text-sm font-medium transition-colors hover:text-primary",
-              isActive("/") ? "text-primary" : "text-muted-foreground"
+              isActive("/home") ? "text-primary" : "text-muted-foreground"
             )}
           >
             Home
@@ -58,12 +66,20 @@ const Navbar = () => {
           </Link>
           
           <div className="flex items-center space-x-2">
-            <Button variant="outline" asChild>
-              <Link to="/login">Login</Link>
-            </Button>
-            <Button asChild>
-              <Link to="/signup">Sign Up</Link>
-            </Button>
+            {user ? (
+              <Button variant="outline" onClick={handleLogout}>
+                Logout
+              </Button>
+            ) : (
+              <>
+                <Button variant="outline" asChild>
+                  <Link to="/login">Login</Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/signup">Sign Up</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
