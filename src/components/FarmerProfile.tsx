@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,12 +6,44 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { User, MapPin, Wheat, Droplets, Calendar, TrendingUp } from "lucide-react";
+import { User, MapPin, Wheat, Droplets, Calendar, TrendingUp, Edit, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { db } from "@/lib/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+
+interface FarmerData {
+  fullName: string;
+  email: string;
+  phone: string;
+  farmName: string;
+  location: string;
+  farmSize: string;
+  experience: string;
+  primaryCrop: string;
+  secondaryCrops: string;
+  currentSeason: string;
+  soilType: string;
+  irrigationType: string;
+  waterSource: string;
+  fertilizerUsage: string;
+  pesticideUsage: string;
+  seedVariety: string;
+  plantingMethod: string;
+  expectedYield: string;
+  lastYearYield: string;
+  challenges: string;
+  goals: string;
+  equipment: string;
+  additionalCrops?: string[];
+}
 
 const FarmerProfile = () => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(true);
+  const [savedProfile, setSavedProfile] = useState<FarmerData | null>(null);
+  const [formData, setFormData] = useState<FarmerData>({
     // Personal details
     fullName: "",
     email: "",
@@ -41,19 +73,249 @@ const FarmerProfile = () => {
     challenges: "",
     goals: "",
     equipment: "",
+    additionalCrops: [],
   });
+
+  // Load existing profile data
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        const docRef = doc(db, "farmers", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data() as FarmerData;
+          setFormData(data);
+          setSavedProfile(data);
+          setIsEditing(false);
+        }
+      } catch (error) {
+        console.error("Error loading profile:", error);
+      }
+    };
+
+    loadProfile();
+  }, [user]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Profile Saved Successfully!",
-      description: "Your farming profile has been saved. Our AI will analyze your data to provide personalized recommendations.",
-    });
+    
+    if (!user?.uid) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to save your profile.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const docRef = doc(db, "farmers", user.uid);
+      await setDoc(docRef, formData, { merge: true });
+      
+      setSavedProfile(formData);
+      setIsEditing(false);
+      
+      toast({
+        title: "Profile Saved Successfully!",
+        description: "Your farming profile has been saved. Our AI will analyze your data to provide personalized recommendations.",
+      });
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save profile. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
+
+  const handleAddCrop = () => {
+    const newCrop = prompt("Enter the name of the additional crop:");
+    if (newCrop && newCrop.trim()) {
+      const updatedData = {
+        ...formData,
+        additionalCrops: [...(formData.additionalCrops || []), newCrop.trim()]
+      };
+      setFormData(updatedData);
+      
+      // Save immediately if user has a saved profile
+      if (savedProfile && user?.uid) {
+        const docRef = doc(db, "farmers", user.uid);
+        setDoc(docRef, updatedData, { merge: true }).then(() => {
+          setSavedProfile(updatedData);
+          toast({
+            title: "Crop Added!",
+            description: `${newCrop} has been added to your profile.`,
+          });
+        });
+      }
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  if (!isEditing && savedProfile) {
+    return (
+      <section id="profile" className="py-20 px-4 bg-background">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+              Farmer Profile
+            </Badge>
+            <h2 className="text-4xl font-bold mb-4 text-foreground">
+              Your Farming Profile
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Here's your complete farming profile information
+            </p>
+          </div>
+
+          <Card className="shadow-farm">
+            <CardHeader className="bg-gradient-earth text-white rounded-t-lg">
+              <div className="flex items-center gap-3">
+                <User className="h-6 w-6" />
+                <div>
+                  <CardTitle className="text-2xl">{savedProfile.fullName || "Farmer Profile"}</CardTitle>
+                  <CardDescription className="text-white/80">
+                    {savedProfile.farmName && `${savedProfile.farmName} - `}{savedProfile.location}
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="p-8">
+              <div className="space-y-8">
+                {/* Personal Information */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <User className="h-5 w-5 text-primary" />
+                    <h3 className="text-xl font-semibold text-foreground">Personal Details</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><strong>Full Name:</strong> {savedProfile.fullName}</div>
+                    <div><strong>Email:</strong> {savedProfile.email}</div>
+                    <div><strong>Phone:</strong> {savedProfile.phone || "Not provided"}</div>
+                    <div><strong>Farm Name:</strong> {savedProfile.farmName || "Not provided"}</div>
+                  </div>
+                </div>
+
+                {/* Farm Details */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <MapPin className="h-5 w-5 text-primary" />
+                    <h3 className="text-xl font-semibold text-foreground">Farm Details</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div><strong>Location:</strong> {savedProfile.location}</div>
+                    <div><strong>Farm Size:</strong> {savedProfile.farmSize} acres</div>
+                    <div><strong>Experience:</strong> {savedProfile.experience || "Not specified"}</div>
+                  </div>
+                </div>
+
+                {/* Crop Information */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Wheat className="h-5 w-5 text-primary" />
+                    <h3 className="text-xl font-semibold text-foreground">Crop Information</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><strong>Primary Crop:</strong> {savedProfile.primaryCrop || "Not specified"}</div>
+                    <div><strong>Current Season:</strong> {savedProfile.currentSeason || "Not specified"}</div>
+                    <div><strong>Soil Type:</strong> {savedProfile.soilType || "Not specified"}</div>
+                    <div><strong>Seed Variety:</strong> {savedProfile.seedVariety || "Not specified"}</div>
+                  </div>
+                  {savedProfile.secondaryCrops && (
+                    <div><strong>Secondary Crops:</strong> {savedProfile.secondaryCrops}</div>
+                  )}
+                  {savedProfile.additionalCrops && savedProfile.additionalCrops.length > 0 && (
+                    <div>
+                      <strong>Additional Crops:</strong>
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        {savedProfile.additionalCrops.map((crop, index) => (
+                          <Badge key={index} variant="secondary">{crop}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Water Management */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Droplets className="h-5 w-5 text-primary" />
+                    <h3 className="text-xl font-semibold text-foreground">Water Management</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><strong>Irrigation Type:</strong> {savedProfile.irrigationType || "Not specified"}</div>
+                    <div><strong>Water Source:</strong> {savedProfile.waterSource || "Not specified"}</div>
+                  </div>
+                </div>
+
+                {/* Input Management & Yield */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <TrendingUp className="h-5 w-5 text-primary" />
+                    <h3 className="text-xl font-semibold text-foreground">Input Management & Yield</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><strong>Fertilizer Usage:</strong> {savedProfile.fertilizerUsage || "Not specified"}</div>
+                    <div><strong>Pesticide Usage:</strong> {savedProfile.pesticideUsage || "Not specified"}</div>
+                    <div><strong>Expected Yield:</strong> {savedProfile.expectedYield || "Not specified"}</div>
+                    <div><strong>Last Year's Yield:</strong> {savedProfile.lastYearYield || "Not specified"}</div>
+                  </div>
+                </div>
+
+                {/* Additional Information */}
+                {(savedProfile.challenges || savedProfile.goals || savedProfile.equipment) && (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-foreground">Additional Information</h3>
+                    {savedProfile.challenges && (
+                      <div><strong>Current Challenges:</strong> {savedProfile.challenges}</div>
+                    )}
+                    {savedProfile.goals && (
+                      <div><strong>Farming Goals:</strong> {savedProfile.goals}</div>
+                    )}
+                    {savedProfile.equipment && (
+                      <div><strong>Available Equipment:</strong> {savedProfile.equipment}</div>
+                    )}
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-4 pt-6">
+                  <Button 
+                    onClick={handleEdit}
+                    size="lg" 
+                    className="bg-gradient-growth text-primary-foreground hover:shadow-growth transition-farm"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Update Profile
+                  </Button>
+                  <Button 
+                    onClick={handleAddCrop}
+                    variant="outline"
+                    size="lg"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Another Crop
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="profile" className="py-20 px-4 bg-background">
@@ -63,7 +325,7 @@ const FarmerProfile = () => {
             Farmer Registration
           </Badge>
           <h2 className="text-4xl font-bold mb-4 text-foreground">
-            Create Your Farming Profile
+            {savedProfile ? "Update Your Farming Profile" : "Create Your Farming Profile"}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Help us understand your farming operations to provide personalized advisory services and recommendations
@@ -265,6 +527,18 @@ const FarmerProfile = () => {
                     onChange={(e) => handleInputChange("secondaryCrops", e.target.value)}
                   />
                 </div>
+
+                {/* Additional Crops Display */}
+                {formData.additionalCrops && formData.additionalCrops.length > 0 && (
+                  <div className="space-y-2">
+                    <Label>Additional Crops</Label>
+                    <div className="flex gap-2 flex-wrap">
+                      {formData.additionalCrops.map((crop, index) => (
+                        <Badge key={index} variant="secondary">{crop}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Irrigation & Water Management */}
@@ -405,7 +679,7 @@ const FarmerProfile = () => {
                   size="lg" 
                   className="w-full bg-gradient-growth text-primary-foreground hover:shadow-growth transition-farm"
                 >
-                  Save Farmer Profile
+                  {savedProfile ? "Update Farmer Profile" : "Save Farmer Profile"}
                 </Button>
               </div>
             </form>
