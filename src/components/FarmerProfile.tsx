@@ -789,10 +789,12 @@ const FarmerProfile = () => {
             </form>
           </CardContent>
         </Card>
+      </div>
 
-        {/* Add New Crop Form */}
-        {isAddingCrop && (
-          <Card className="shadow-farm mt-8">
+      {/* Add New Crop Form - Available in both editing and viewing modes */}
+      {isAddingCrop && (
+        <div className="container mx-auto max-w-4xl px-4 py-8">
+          <Card className="shadow-farm">
             <CardHeader className="bg-gradient-earth text-white rounded-t-lg">
               <div className="flex items-center gap-3">
                 <Wheat className="h-6 w-6" />
@@ -1039,8 +1041,8 @@ const FarmerProfile = () => {
               </form>
             </CardContent>
           </Card>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 };
