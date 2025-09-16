@@ -14,7 +14,7 @@ const Hero = () => {
         <h1 className="text-5xl md:text-7xl font-bold mb-6 mt-16 text-primary-foreground animate-fade-in">
           Welcome to{" "}
           <span className="bg-gradient-harvest bg-clip-text text-transparent">
-            Agriverse
+            AgriVerse
           </span>
         </h1>
         
