@@ -94,7 +94,7 @@ const Hero = () => {
           <Button 
             variant="outline" 
             size="lg"
-            className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 px-8 py-4 text-lg"
+            className="border-primary-foreground/30 text-black hover:bg-primary-foreground/10 hover:text-black px-8 py-4 text-lg"
             asChild
           >
             <Link to="/about">Learn More</Link>
