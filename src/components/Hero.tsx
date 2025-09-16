@@ -11,7 +11,7 @@ const Hero = () => {
       
       <div className="container mx-auto max-w-6xl text-center relative z-10">
         {/* Main heading */}
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 text-primary-foreground animate-fade-in">
+        <h1 className="text-5xl md:text-7xl font-bold mb-6 mt-16 text-primary-foreground animate-fade-in">
           Welcome to{" "}
           <span className="bg-gradient-harvest bg-clip-text text-transparent">
             Agriverse
