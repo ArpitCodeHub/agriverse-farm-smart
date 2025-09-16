@@ -11,7 +11,7 @@ import {
   Heart,
   Award
 } from "lucide-react";
-
+// need change in logo
 const About = () => {
   const features = [
     {
