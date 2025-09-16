@@ -7,6 +7,7 @@ import Preloader from "./components/Preloader";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import Index from "./pages/Index";
 import Profile from "./pages/Profile";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
@@ -22,7 +23,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Preloader />} />
+          <Route path="/" element={<><Navbar /><Index /></>} />
+          <Route path="/preloader" element={<Preloader />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/home" element={<><Navbar /><Home /></>} />
           <Route path="/profile" element={<><Navbar /><Profile /></>} />
