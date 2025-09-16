@@ -10,15 +10,6 @@ const Hero = () => {
       <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-primary via-transparent to-secondary" />
       
       <div className="container mx-auto max-w-6xl text-center relative z-10">
-        {/* Logo */}
-        <div className="mb-8 flex justify-center">
-          <img 
-            src={agriverselogo} 
-            alt="Agriverse Logo" 
-            className="h-16 w-auto animate-grow-bounce"
-          />
-        </div>
-        
         {/* Main heading */}
         <h1 className="text-5xl md:text-7xl font-bold mb-6 text-primary-foreground animate-fade-in">
           Welcome to{" "}
@@ -90,7 +81,7 @@ const Hero = () => {
         </div>
         
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in mb-16">
           <Button 
             variant="outline" 
             size="lg"
