@@ -29,7 +29,6 @@ interface CropData {
 }
 
 interface FarmerData {
-  farmerId?: string;
   fullName: string;
   email: string;
   phone: string;
@@ -141,8 +140,8 @@ const FarmerProfile = () => {
     setNewCropData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Utility function to send farmer ID to n8n webhook
-  const notifyWebhook = async (farmerId: string) => {
+  // Utility function to send farmer data to n8n webhook
+  const notifyWebhook = async (farmerId: string, farmerName: string) => {
     try {
       const response = await fetch('https://n8n.srv1012569.hstgr.cloud/webhook-test/314767d0-c760-4b50-8921-4e8663729f2e', {
         method: 'POST',
@@ -150,7 +149,8 @@ const FarmerProfile = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          farmerId: farmerId
+          farmerId: farmerId,
+          name: farmerName
         }),
       });
 
@@ -163,13 +163,6 @@ const FarmerProfile = () => {
       console.error('Failed to notify webhook:', error);
       // Don't block the main process if webhook fails
     }
-  };
-
-  // Generate unique farmer ID
-  const generateFarmerId = () => {
-    const timestamp = Date.now().toString();
-    const randomPart = Math.random().toString(36).substring(2, 15);
-    return `farmer_${timestamp}_${randomPart}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -189,24 +182,16 @@ const FarmerProfile = () => {
       
       // Check if this is a new farmer (no existing profile)
       const isNewFarmer = !savedProfile;
-      let dataToSave = { ...formData };
-      
-      if (isNewFarmer && !formData.farmerId) {
-        // Generate unique farmer ID for new farmers
-        const farmerId = generateFarmerId();
-        dataToSave.farmerId = farmerId;
-        setFormData(prev => ({ ...prev, farmerId }));
-      }
       
       // Save to Firestore first
-      await setDoc(docRef, dataToSave, { merge: true });
+      await setDoc(docRef, formData, { merge: true });
       
-      setSavedProfile(dataToSave);
+      setSavedProfile(formData);
       setIsEditing(false);
       
       // Send webhook notification for new farmers only
-      if (isNewFarmer && dataToSave.farmerId) {
-        await notifyWebhook(dataToSave.farmerId);
+      if (isNewFarmer) {
+        await notifyWebhook(user.uid, formData.fullName);
       }
       
       toast({
