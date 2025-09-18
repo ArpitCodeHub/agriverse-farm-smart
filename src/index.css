@@ -44,6 +44,10 @@ All colors MUST be HSL for consistency.
     /* Alert colors */
     --destructive: 15 85% 55%;
     --destructive-foreground: 45 25% 95%;
+    
+    /* Warning - Yellow-orange highlight */
+    --warning: 35 95% 65%;
+    --warning-foreground: 120 25% 15%;
 
     /* Interactive elements */
     --border: 35 25% 85%;
