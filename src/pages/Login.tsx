@@ -8,6 +8,8 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import agriverselogo from "@/assets/agriverse-logo.png";
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -16,6 +18,46 @@ const Login = () => {
   const { login } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Function to send user data to n8n webhook on login
+  const notifyLoginWebhook = async (userId: string, fullName: string) => {
+    try {
+      const response = await fetch('https://n8n.srv1012569.hstgr.cloud/webhook-test/314767d0-c760-4b50-8921-4e8663729f2e', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          docId: userId,
+          fullName: fullName
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Webhook notification failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Failed to notify login webhook:', error);
+      // Don't block the login process if webhook fails
+    }
+  };
+
+  // Function to get user data from Firestore
+  const getUserData = async (userId: string) => {
+    try {
+      const userDocRef = doc(db, 'farmers', userId);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        return userData.fullName || '';
+      }
+      return '';
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      return '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +72,12 @@ const Login = () => {
         variant: "destructive",
       });
     } else {
+      // Get user data and send to webhook
+      if (user) {
+        const fullName = await getUserData(user.uid);
+        await notifyLoginWebhook(user.uid, fullName);
+      }
+      
       toast({
         title: "Success",
         description: "Logged in successfully!",
