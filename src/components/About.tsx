@@ -143,7 +143,7 @@ const About = () => {
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { string: "Multiple", label: "Crop Types Supported" },
+              { number: "10+", label: "Crop Types Supported" },
               { number: "95%", label: "Yield Improvement*" },
               { number: "24/7", label: "Expert Support" }
             ].map((stat, index) => (
