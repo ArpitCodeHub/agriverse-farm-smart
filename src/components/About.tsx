@@ -143,9 +143,8 @@ const About = () => {
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { number: "100+", label: "Active Farmers" },
-              { number: "50+", label: "Crop Types Supported" },
-              { number: "95%", label: "Yield Improvement" },
+              { string: "Multiple", label: "Crop Types Supported" },
+              { number: "95%", label: "Yield Improvement*" },
               { number: "24/7", label: "Expert Support" }
             ].map((stat, index) => (
               <div key={stat.label} className="animate-fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
