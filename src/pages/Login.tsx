@@ -22,7 +22,7 @@ const Login = () => {
   // Function to send user data to n8n webhook on login
   const notifyLoginWebhook = async (userId: string, fullName: string) => {
     try {
-      const response = await fetch('https://n8n.srv1012569.hstgr.cloud/webhook-test/314767d0-c760-4b50-8921-4e8663729f2e', {
+      const response = await fetch('https://n8n.srv1012569.hstgr.cloud/webhook/314767d0-c760-4b50-8921-4e8663729f2e', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
