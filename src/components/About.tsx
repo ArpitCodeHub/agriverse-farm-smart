@@ -146,6 +146,7 @@ const About = () => {
               { number: "10+", label: "Crop Types Supported" },
               { number: "95%", label: "Yield Improvement*" },
               { number: "24/7", label: "Expert Support" }
+              { number: "99.9%", label: "AI-Assistant Uptime" }
             ].map((stat, index) => (
               <div key={stat.label} className="animate-fade-in" style={{ animationDelay: `${index * 0.2}s` }}>
                 <div className="text-3xl md:text-4xl font-bold text-secondary mb-2">
